@@ -28,13 +28,23 @@ def add_classes(classes_name, classes_room):
     cursor.close()
     return inserted_id
 
-def get_class(id):
-    query = "SELECT firstname, lastname FROM students WHERE id = %s"
+
+
+def get_class_id(classe_name):
+    query = "SELECT id FROM classes WHERE name = %s"
     cursor = db_connection.cursor()
-    cursor.execute(query, (id,))
+    cursor.execute(query, (classe_name,))
     row = cursor.fetchone()
     cursor.close()
     return row
+
+def add_student(firstname, lastname, student_email,class_id):
+    query = "INSERT INTO students (firstname, lastname, email ,class_id) values (%s, %s, %s, %s)"
+    cursor = db_connection.cursor()
+    cursor.execute(query, (firstname, lastname, student_email ,class_id))
+    inserted_id = cursor.lastrowid
+    cursor.close()
+    return inserted_id
 
 
 
@@ -44,5 +54,17 @@ with open(filename_classes, 'r') as csvfile:
     next(csvreader, None)
     for row in csvreader:
         add_classes(row[0],row[1])
+
+close_dbconnection()
+
+open_dbconnection()
+with open(filename_students, 'r') as csvfile:
+    csvreader1 = csv.reader(csvfile, delimiter=(";"))
+    next(csvreader1, None)
+    for row in csvreader1:
+        classes_id = get_class_id(row[3])
+        if classes_id == None:
+            print("FAUX")
+        add_student(row[0], row[1], row[2], classes_id[0])
 
 close_dbconnection()
