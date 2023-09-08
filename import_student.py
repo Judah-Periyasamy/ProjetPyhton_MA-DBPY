@@ -28,7 +28,7 @@ def delete():
     cursor.execute(sql_delete_query2)
     cursor.execute("SET FOREIGN_KEY_CHECKS=1")
     db_connection.commit()
-    print('number of rows deleted', cursor.rowcount)
+    #print('number of rows deleted', cursor.rowcount)
 
 def add_classes(classes_name, classes_room):
     query = "INSERT INTO classes (name, room) values (%s, %s)"
