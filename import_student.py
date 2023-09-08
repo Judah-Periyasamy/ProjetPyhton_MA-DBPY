@@ -52,7 +52,7 @@ def get_class_id(classe_name):
 def add_student(firstname, lastname, student_email,class_id):
     query = "INSERT INTO students (firstname, lastname, email ,class_id) values (%s, %s, %s, %s)"
     cursor = db_connection.cursor()
-    cursor.execute(query, (firstname, lastname, student_email ,class_id))
+    cursor.execute(query, (firstname, lastname, student_email, class_id))
     inserted_id = cursor.lastrowid
     cursor.close()
     return inserted_id
