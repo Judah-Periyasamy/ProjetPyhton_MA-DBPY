@@ -19,6 +19,16 @@ def open_dbconnection():
 def close_dbconnection():
     db_connection.close()
 
+def delete():
+    sql_delete_query1 = "TRUNCATE TABLE classroom_cleaning.classes"
+    sql_delete_query2 = "TRUNCATE TABLE classroom_cleaning.students"
+    cursor = db_connection.cursor()
+    cursor.execute("SET FOREIGN_KEY_CHECKS=0")
+    cursor.execute(sql_delete_query1)
+    cursor.execute(sql_delete_query2)
+    cursor.execute("SET FOREIGN_KEY_CHECKS=1")
+    db_connection.commit()
+    print('number of rows deleted', cursor.rowcount)
 
 def add_classes(classes_name, classes_room):
     query = "INSERT INTO classes (name, room) values (%s, %s)"
@@ -49,6 +59,7 @@ def add_student(firstname, lastname, student_email,class_id):
 
 
 open_dbconnection()
+delete()
 with open(filename_classes, 'r') as csvfile:
     csvreader = csv.reader(csvfile, delimiter=(";"))
     next(csvreader, None)
@@ -61,10 +72,16 @@ open_dbconnection()
 with open(filename_students, 'r') as csvfile:
     csvreader1 = csv.reader(csvfile, delimiter=(";"))
     next(csvreader1, None)
-    for row in csvreader1:
-        classes_id = get_class_id(row[3])
-        if classes_id == None:
-            print("FAUX")
-        add_student(row[0], row[1], row[2], classes_id[0])
+    try:
+        for row in csvreader1:
+            classes_id = get_class_id(row[3])
+            if classes_id == None:
+                print("FAUX")
+            if len(row) != 4:
+                print("il manque une colonne dans le document")
+            else:
+                add_student(row[0], row[1], row[2], classes_id[0])
+    except:
+        print("Erreur")
 
 close_dbconnection()
