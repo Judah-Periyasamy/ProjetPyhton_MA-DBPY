@@ -6,6 +6,7 @@ Version : 1.0
 """
 import mysql.connector
 import csv
+from mysql.connector import errorcode
 
 filename_classes = "classes.csv"
 filename_students = "students.csv"
@@ -15,7 +16,7 @@ def open_dbconnection():
     db_connection = mysql.connector.connect(host='127.0.0.1', port='3306',
                                    user='judah', password='Jukuporter392.', database='classroom_cleaning',
                                    buffered=True, autocommit=True)
-
+    return db_connection
 def close_dbconnection():
     db_connection.close()
 
@@ -27,7 +28,7 @@ def delete():
     cursor.execute(sql_delete_query1)
     cursor.execute(sql_delete_query2)
     cursor.execute("SET FOREIGN_KEY_CHECKS=1")
-    db_connection.commit()
+    #db_connection.commit()
     #print('number of rows deleted', cursor.rowcount)
 
 def add_classes(classes_name, classes_room):
@@ -57,31 +58,39 @@ def add_student(firstname, lastname, student_email,class_id):
     return inserted_id
 
 
+def get_classes_from_csv():
+    with open(filename_classes, 'r') as csvfile:
+        csvreader = csv.reader(csvfile, delimiter=(";"))
+        next(csvreader, None)
+        for row in csvreader:
+            add_classes(row[0],row[1])
 
-open_dbconnection()
-delete()
-with open(filename_classes, 'r') as csvfile:
-    csvreader = csv.reader(csvfile, delimiter=(";"))
-    next(csvreader, None)
-    for row in csvreader:
-        add_classes(row[0],row[1])
 
-close_dbconnection()
-
-open_dbconnection()
-with open(filename_students, 'r') as csvfile:
-    csvreader1 = csv.reader(csvfile, delimiter=(";"))
-    next(csvreader1, None)
-    try:
+def get_students_from_csv():
+    with open(filename_students, 'r') as csvfile:
+        csvreader1 = csv.reader(csvfile, delimiter=(";"))
+        next(csvreader1, None)
         for row in csvreader1:
-            classes_id = get_class_id(row[3])
-            if classes_id == None:
-                print("FAUX")
             if len(row) != 4:
                 print("il manque une colonne dans le document")
             else:
-                add_student(row[0], row[1], row[2], classes_id[0])
-    except:
-        print("Erreur")
+                classes_id = get_class_id(row[3])
+                if classes_id == None:
+                    print("Manque la classe")
+                else:
+                    add_student(row[0], row[1], row[2], classes_id[0])
 
-close_dbconnection()
+#MAIN
+try:
+    open_dbconnection()
+    delete()
+    get_classes_from_csv()
+    get_students_from_csv()
+except mysql.connector.Error as err:
+    if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+        print("Something is wrong with your user name or password")
+    elif err.errno == errorcode.ER_BAD_DB_ERROR:
+        print("Database does not exist")
+    else:
+        print(err)
+
