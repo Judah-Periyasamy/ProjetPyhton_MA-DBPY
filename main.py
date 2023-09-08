@@ -15,7 +15,7 @@ def choose_menu():
     6. Générer le document « Ordre en classe »
     7. Sortir du menu """)
     print("")
-    while True:
+    while True: 
         try:
             user_menu = int(input("Veuillez choisir un menu : "))
             while user_menu < 1 or user_menu > 7:
