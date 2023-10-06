@@ -49,7 +49,7 @@ def choose_menu():
                 print("")
                 menu_info()
                 user_menu = int(input("Veuillez choisir un menu : "))
-            while user_menu == 1 or user_menu == 2 or user_menu == 3 or user_menu == 6:
+            while user_menu == 1 or user_menu == 3 or user_menu == 6:
                 print("Menu pas encore fonctionnel")
                 print("")
                 menu_info()
@@ -66,6 +66,10 @@ def choose_menu():
                     print("Suppression réussie.\n")
                 else:
                     print("Echec de la suppression. Assurez-vous que le nom, prénom et la classe de l'élève sont corrects.\n")
+            elif user_menu == 2:
+                info_student = get_info_student()
+                class_name = info_student['classname']
+                print(class_name)
             elif user_menu == 5:
                 info_student = get_info_student()
                 last_name = info_student['lastname']

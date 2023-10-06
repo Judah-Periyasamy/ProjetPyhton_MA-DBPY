@@ -58,3 +58,18 @@ def get_student_info(user_input,user_input2):
     row = cursor.fetchone()
     cursor.close()
     return row
+
+def get_index_student(lst, value):
+    """
+    get the position of the searched element (student) in the list
+    :param lst: the list in which we want to search
+    :param value: the value we search
+    :return: the position of the value in the list
+    """
+    pos = 0
+    for elt in lst:
+        if elt[0] == value:
+            return pos
+        else:
+            pos += 1
+    return pos
